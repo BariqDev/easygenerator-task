@@ -1,5 +1,17 @@
 services:
-
+  frontend-service:
+    build:
+      context: ./front-end
+      dockerfile: frontend-service.dockerfile
+    # restart: always
+    ports:
+      - "5173:80"
+    environment:
+      VITE_BASE_URL: http://backend-service:3000
+    depends_on:
+      - backend-service
+    networks:
+      - app-network
   backend-service:
     build:
       context: ./backend
