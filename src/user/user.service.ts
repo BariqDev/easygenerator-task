@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { MongoError } from 'mongodb';
 import { UserProfileDto } from './dto/user-profile.dto';
 
@@ -45,6 +45,9 @@ export class UserService {
   }
 
   async getProfile(id: string): Promise<UserProfileDto | null> {
+    if (!Types.ObjectId.isValid(id))
+      throw new NotFoundException('Invalid user ID');
+
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException();
