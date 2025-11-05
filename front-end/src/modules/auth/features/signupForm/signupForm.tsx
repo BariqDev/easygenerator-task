@@ -4,9 +4,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { passwordRegex } from "../../../../util/const";
+import { useSignUp } from "../../hooks/api/useSignUp";
+import type { UserProfile } from "../../../../entity/user";
 
-const SignupForm = () => {
+interface SignupFormProps {
+  onUserAuthenticated: (userProfile: UserProfile) => void;
+}
+const SignupForm: React.FC<SignupFormProps> = ({ onUserAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  // validation schema
   const schema = z
     .object({
       name: z.string().min(5, "name must be at least 5 characters"),
@@ -30,6 +37,7 @@ const SignupForm = () => {
     resolver: zodResolver(schema),
   });
 
+  const { mutate, isPending } = useSignUp(onUserAuthenticated);
   return (
     <>
       {/* Header */}
@@ -43,9 +51,9 @@ const SignupForm = () => {
 
       {/* Form fields */}
       <form
+        autoComplete="off"
         onSubmit={handleSubmit((data) => {
-          // handle inputs
-          console.log(data);
+          mutate(data);
         })}
         className="flex flex-col gap-2"
       >
@@ -59,10 +67,10 @@ const SignupForm = () => {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 outline-none"
               placeholder="John Doe"
             />
-            {errors.name?.message && (
-              <span className="text-xs text-red-500">{errors.name?.message}</span>
-            )}
           </div>
+          {errors.name?.message && (
+            <span className="text-xs text-red-500">{errors.name?.message}</span>
+          )}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Email Address</label>
@@ -74,10 +82,10 @@ const SignupForm = () => {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 outline-none"
               placeholder="john@example.com"
             />
-            {errors.email?.message && (
-              <span className="text-xs text-red-500">{errors.email?.message}</span>
-            )}
           </div>
+          {errors.email?.message && (
+            <span className="text-xs text-red-500">{errors.email?.message}</span>
+          )}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Password</label>
@@ -89,10 +97,6 @@ const SignupForm = () => {
               placeholder="••••••••"
               {...register("password")}
             />
-            {errors.password?.message && (
-              <span className="text-xs text-red-500">{errors.password?.message}</span>
-            )}
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -101,12 +105,15 @@ const SignupForm = () => {
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
+          {errors.password?.message && (
+            <span className="text-xs text-red-500">{errors.password?.message}</span>
+          )}
         </div>
         <button
           type="submit"
           className="w-full bg-linear-to-r from-purple-600 to-pink-500 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition duration-200"
         >
-          Sign Up
+          {isPending ? "loading ..." : "Sign Up"}
         </button>
       </form>
 

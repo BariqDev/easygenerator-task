@@ -1,16 +1,25 @@
 import { useState } from "react";
-import SignupForm from "./features/signup/signup";
+import SignupForm from "./features/signupForm/signupForm";
 import SigninForm from "./features/signinForm/signinForm";
+import type { UserProfile } from "../../entity/user";
 
-export default function AuthForms() {
+interface AuthFormsProps {
+  onUserAuthenticated: (userProfile: UserProfile) => void;
+}
+const AuthForms: React.FC<AuthFormsProps> = ({ onUserAuthenticated }) => {
   const [isSignUp, setIsSignUp] = useState(true);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-600 via-pink-500 to-red-500 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-2xl p-8 space-y-6">
           {/* Forms */}
-          <div className="space-y-4">{isSignUp ? <SignupForm /> : <SigninForm />}</div>
+          <div className="space-y-4">
+            {isSignUp ? (
+              <SignupForm onUserAuthenticated={onUserAuthenticated} />
+            ) : (
+              <SigninForm onUserAuthenticated={onUserAuthenticated} />
+            )}
+          </div>
 
           {/* Divider */}
           <div className="relative">
@@ -36,6 +45,7 @@ export default function AuthForms() {
           </div>
         </div>
       </div>
-    </div>
   );
-}
+};
+
+export default AuthForms;

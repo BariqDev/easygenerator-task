@@ -4,9 +4,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { passwordRegex } from "../../../../util/const";
+import { useSignIn } from "../../hooks/api/useSignIn";
+import type { UserProfile } from "../../../../entity/user";
 
-const SigninForm = () => {
+interface SignupFormProps {
+  onUserAuthenticated: (userProfile: UserProfile) => void;
+}
+
+const SigninForm: React.FC<SignupFormProps> = ({ onUserAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  // validation schema
   const schema = z
     .object({
       email: z.email({ error: "Invalid Email address" }),
@@ -29,6 +37,8 @@ const SigninForm = () => {
     resolver: zodResolver(schema),
   });
 
+  const { mutate, isPending } = useSignIn(onUserAuthenticated);
+
   return (
     <>
       {/* Header */}
@@ -43,8 +53,7 @@ const SigninForm = () => {
       {/* Form fields */}
       <form
         onSubmit={handleSubmit((data) => {
-          // handle inputs
-          console.log(data);
+          mutate(data);
         })}
         className="flex flex-col gap-2"
       >
@@ -58,10 +67,10 @@ const SigninForm = () => {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 outline-none"
               placeholder="john@example.com"
             />
-            {errors.email?.message && (
-              <span className="text-xs text-red-500">{errors.email?.message}</span>
-            )}
           </div>
+          {errors.email?.message && (
+            <span className="text-xs text-red-500">{errors.email?.message}</span>
+          )}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Password</label>
@@ -73,9 +82,6 @@ const SigninForm = () => {
               placeholder="••••••••"
               {...register("password")}
             />
-            {errors.password?.message && (
-              <span className="text-xs text-red-500">{errors.password?.message}</span>
-            )}
 
             <button
               type="button"
@@ -85,12 +91,15 @@ const SigninForm = () => {
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
+          {errors.password?.message && (
+            <span className="text-xs text-red-500">{errors.password?.message}</span>
+          )}
         </div>
         <button
           type="submit"
           className="w-full bg-linear-to-r from-purple-600 to-pink-500 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition duration-200"
         >
-          Sign In
+          {isPending ? "Loading ..." : "Sign In"}
         </button>
       </form>
 

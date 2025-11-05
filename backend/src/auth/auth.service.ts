@@ -22,7 +22,7 @@ export class AuthService {
     const hashed_password = await bcrypt.hash(signupDto.password, 10);
 
     // Save user data with hashed password
-    const user = await this.userService.create({
+    const user = await this.userService.createProfile({
       ...signupDto,
       password: hashed_password,
     });
@@ -34,11 +34,11 @@ export class AuthService {
     };
     const token = this.jwtService.sign(jwtPayload);
 
-    return {
+    const response = {
+      ...user,
       access_token: token,
-      user: user,
-      message: 'User added successfully',
     };
+    return response;
   }
 
   async signin(signinDto: SigninDto) {
@@ -46,7 +46,7 @@ export class AuthService {
     const user = await this.userService.findOne(signinDto.email);
 
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('user not found');
     }
 
     // compare password
@@ -67,15 +67,14 @@ export class AuthService {
     };
     const token = this.jwtService.sign(jwtPayload);
 
-    const mappedUser = {
-      id: user?._id?.toString(),
-      name: user?.name,
+    const response = {
+      id: user._id.toString(),
+      name: user.name,
       email: user.email,
-    };
-    return {
+      createdAt: user.createdAt,
       access_token: token,
-      user: mappedUser,
-      message: 'User logged in successfully',
     };
+
+    return response;
   }
 }

@@ -23,7 +23,7 @@ export class UserService {
 
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserProfileDto> {
+  async createProfile(createUserDto: CreateUserDto): Promise<UserProfileDto> {
     try {
       const savedUser = await this.userModel.create({
         name: createUserDto.name,
@@ -50,7 +50,7 @@ export class UserService {
 
     const user = await this.userModel.findById(id).exec();
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException('user not found');
     }
     return this.toResponseDto(user);
   }
