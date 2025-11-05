@@ -81,3 +81,7 @@ navigate to  http://localhost:5173/
 - JWT is used to protect routes.
 
 - **Swagger** will be used to document all API endpoints
+
+`# Stop the application`
+`docker compose down`
+or `make down`
