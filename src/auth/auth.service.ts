@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SignupDto } from './dto/sign-up.dto';
 import { SigninDto } from './dto/sign-in.dto';
 import { UserService } from 'src/user/user.service';
@@ -36,7 +40,41 @@ export class AuthService {
     };
   }
 
-  signin(signinDto: SigninDto) {
-    return signinDto;
+  async signin(signinDto: SigninDto) {
+    // get user profile
+    const user = await this.userService.findOne(signinDto.email);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    // compare password
+    const isPasswordMatch = await bcrypt.compare(
+      signinDto.password,
+      user?.hashed_password || '',
+    );
+
+    // invalid password
+    if (!isPasswordMatch) {
+      throw new UnauthorizedException();
+    }
+
+    // create jwt token
+    const jwtPayload = {
+      sub: user?._id?.toString(),
+      email: user.email,
+    };
+    const token = this.jwtService.sign(jwtPayload);
+
+    const mappedUser = {
+      id: user?._id?.toString(),
+      name: user?.name,
+      email: user.email,
+    };
+    return {
+      access_token: token,
+      user: mappedUser,
+      message: 'User logged in successfully',
+    };
   }
 }
