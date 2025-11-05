@@ -2,7 +2,11 @@
 /dist
 /node_modules
 /build
-
+/backend/node_modules
+/backend/dist
+/backend/node_modules
+backend/build
+/front-end/node_modules
 # Logs
 logs
 *.log
