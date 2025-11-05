@@ -1,6 +1,11 @@
 # ---------- Stage 1: Build the app ----------
 FROM  node:25-alpine3.21 AS builder
 
+# Accept build argument
+ARG VITE_BASE_URL
+ENV VITE_BASE_URL=$VITE_BASE_URL
+
+
 # Set working directory
 WORKDIR /app
 
