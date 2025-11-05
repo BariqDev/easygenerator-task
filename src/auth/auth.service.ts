@@ -8,6 +8,7 @@ import { SigninDto } from './dto/sign-in.dto';
 import { UserService } from 'src/user/user.service';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './dto/jwt-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
     });
 
     // create jwt token
-    const jwtPayload = {
+    const jwtPayload: JwtPayload = {
       sub: user.id,
       email: user.email,
     };
@@ -60,7 +61,7 @@ export class AuthService {
     }
 
     // create jwt token
-    const jwtPayload = {
+    const jwtPayload: JwtPayload = {
       sub: user?._id?.toString(),
       email: user.email,
     };
