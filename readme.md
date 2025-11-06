@@ -44,6 +44,8 @@ This project demonstrates a full-stack authentication system:
 
 - **Docker:** Docker Compose for running backend, frontend, and database
 
+- **ngnix:** Serve front end build
+
   
 
 ---
