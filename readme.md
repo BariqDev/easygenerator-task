@@ -75,10 +75,12 @@ navigate to  http://localhost:5173/
 ## Notes
 
 - Logging is enabled via **NestJS Logger**.
+- to check logger **podman or docker desktop** and check backend service.
 
 - Passwords are hashed using **bcrypt**.
 
 - JWT is used to protect routes.
+
 
 - **Swagger** will be used to document all API endpoints
 
